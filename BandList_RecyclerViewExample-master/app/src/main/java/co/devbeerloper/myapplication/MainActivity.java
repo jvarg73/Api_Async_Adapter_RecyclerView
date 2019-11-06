@@ -27,15 +27,11 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private ArrayList<Band> bandsList = new ArrayList<>();
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bandsRecyclerView= findViewById(R.id.bandsRecyclerView);
-
-        //READ BANDS LIST
-        //fillDataSetOfBands ();
 
         Async d = new Async();
         d.execute();
@@ -48,29 +44,34 @@ public class MainActivity extends AppCompatActivity {
         bandsRecyclerView.setAdapter(myBandAdapter);
     }
 
-
-    public void fillDataSetOfBands () {
-
-        ReadInformation readerOfInfo = new ReadInformation();
-        bandsList = readerOfInfo.getAllBandsInTown ();
-    }
-
-
     private class Async extends AsyncTask<Void,Void,Void>{
+        String output;
         @Override
         protected Void doInBackground(Void... Voids) {
             Log.d("Cliente RSS", "se esta ejecutando");
 
+            try{
+                String webService = "https://swapi.co/api/people";
+                URL url = new URL(webService);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
 
-            ReadInformation readerOfInfo = new ReadInformation();
-            bandsList = readerOfInfo.getAllBandsInTown ();
+                if (conn.getResponseCode() ==200){
+                    BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+                    output = br.readLine();
+                }
+            }
+            catch (IOException e) {
+                System.out.println(e);
+            }
             return null;
         }
         @Override
         protected void onPostExecute(Void param) {
-
+            ReadInformation readerOfInfo = new ReadInformation();
+            bandsList = readerOfInfo.getAllBandsInTown (output);
             myBandAdapter.notifyDataSetChanged();
         }
     }
-
 }
