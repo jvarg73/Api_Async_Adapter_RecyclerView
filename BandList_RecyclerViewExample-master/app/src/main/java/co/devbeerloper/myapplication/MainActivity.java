@@ -39,9 +39,6 @@ public class MainActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         bandsRecyclerView.setLayoutManager(layoutManager);
 
-
-        myBandAdapter = new MyBandAdapter(bandsList);
-        bandsRecyclerView.setAdapter(myBandAdapter);
     }
 
     private class Async extends AsyncTask<Void,Void,Void>{
@@ -71,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void param) {
             ReadInformation readerOfInfo = new ReadInformation();
             bandsList = readerOfInfo.getAllBandsInTown (output);
-            myBandAdapter.notifyDataSetChanged();
+            myBandAdapter = new MyBandAdapter(bandsList);
+            bandsRecyclerView.setAdapter(myBandAdapter);
         }
     }
 }
